@@ -9,6 +9,8 @@ struct WallpaperItem: Identifiable {
 
     let url: URL
     var status: Status = .pending
+    /// The processed copy, once it has been written.
+    var output: URL?
 
     var id: URL { url }
     var name: String { url.lastPathComponent }

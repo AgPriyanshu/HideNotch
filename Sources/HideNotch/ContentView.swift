@@ -49,7 +49,7 @@ struct ContentView: View {
             }
             .disabled(model.isProcessing)
 
-            List {
+            List(selection: Binding(get: { model.selection }, set: { model.selection = $0 })) {
                 ForEach(model.items) { item in
                     WallpaperRowView(item: item)
                         .contextMenu {
@@ -84,6 +84,14 @@ struct ContentView: View {
                     .frame(maxWidth: 200)
                 Text("\(model.completed) of \(model.items.count)")
                     .foregroundStyle(.secondary)
+            } else if let applied = model.appliedName {
+                Label("Wallpaper set: \(applied)", systemImage: "checkmark.circle.fill")
+                    .foregroundStyle(Color.green)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+            } else if let error = model.applyError {
+                Label(error, systemImage: "exclamationmark.triangle.fill")
+                    .foregroundStyle(Color.orange)
             } else if model.finished {
                 Label(finishedText, systemImage: model.failureCount == 0 ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
                     .foregroundStyle(model.failureCount == 0 ? Color.green : Color.orange)
@@ -93,6 +101,10 @@ struct ContentView: View {
 
             if model.finished {
                 Button("Show in Finder", action: model.revealOutput)
+
+                Button("Set as Wallpaper", action: model.applySelection)
+                    .disabled(model.selectedOutput == nil)
+                    .help(model.selectedOutput == nil ? "Select a processed wallpaper in the list first." : "Apply the selected wallpaper to your display.")
             }
 
             Button("Add Black Bar", action: model.process)

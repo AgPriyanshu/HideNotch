@@ -15,7 +15,8 @@ on screen, the black bar is baked into the wallpaper image itself, so it keeps w
 
 1. Drop your wallpapers (or a folder of them) onto the window.
 2. Click **Add Black Bar**. New copies are written to `~/Pictures/HideNotch` by default; your originals are untouched.
-3. In **System Settings → Wallpaper**, pick the new images and set the placement to **Fill Screen**.
+3. Select a result in the list and click **Set as Wallpaper**. It is applied to your notched display with **Fill Screen**
+   placement. You can also pick the new images yourself in **System Settings → Wallpaper**.
 
 ## How it works
 

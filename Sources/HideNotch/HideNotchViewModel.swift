@@ -11,6 +11,9 @@ final class HideNotchViewModel: ObservableObject {
     @Published var isProcessing = false
     @Published var completed = 0
     @Published var isDropTargeted = false
+    @Published var selection: URL?
+    @Published var appliedName: String?
+    @Published var applyError: String?
 
     let geometry: DisplayGeometry
     private let detectedBarPercent: Double
@@ -57,12 +60,17 @@ final class HideNotchViewModel: ObservableObject {
 
         items = []
         completed = 0
+        selection = nil
     }
 
     func remove(_ item: WallpaperItem) {
         guard !isProcessing else { return }
 
         items.removeAll { $0.id == item.id }
+
+        if selection == item.id {
+            selection = nil
+        }
     }
 
     func chooseWallpapers() {
@@ -90,6 +98,35 @@ final class HideNotchViewModel: ObservableObject {
         outputFolder = url
     }
 
+    var selectedOutput: URL? {
+        items.first(where: { $0.url == selection })?.output
+    }
+
+    /// Applies the selected processed wallpaper to the notched display, or to every display when none has a notch.
+    func applySelection() {
+        guard let output = selectedOutput else { return }
+
+        let screens = NSScreen.screens
+        let notched = screens.filter { $0.safeAreaInsets.top > 0 }
+        let options: [NSWorkspace.DesktopImageOptionKey: Any] = [
+            .imageScaling: NSImageScaling.scaleProportionallyUpOrDown.rawValue,
+            .allowClipping: true,
+        ]
+
+        applyError = nil
+        appliedName = nil
+
+        do {
+            for screen in notched.isEmpty ? screens : notched {
+                try NSWorkspace.shared.setDesktopImageURL(output, for: screen, options: options)
+            }
+
+            appliedName = output.lastPathComponent
+        } catch {
+            applyError = error.localizedDescription
+        }
+    }
+
     func revealOutput() {
         NSWorkspace.shared.activateFileViewerSelecting([outputFolder])
     }
@@ -100,6 +137,8 @@ final class HideNotchViewModel: ObservableObject {
         resetStatuses()
         completed = 0
         isProcessing = true
+        appliedName = nil
+        applyError = nil
 
         let options = ProcessingOptions(
             barRatio: barPercent / 100,
@@ -119,24 +158,27 @@ final class HideNotchViewModel: ObservableObject {
 
             for url in urls {
                 let result: WallpaperItem.Status
+                let output: URL?
 
                 do {
-                    _ = try WallpaperProcessor.process(source: url, into: folder, options: options)
+                    output = try WallpaperProcessor.process(source: url, into: folder, options: options)
                     result = .done
                 } catch {
+                    output = nil
                     result = .failed(error.localizedDescription)
                 }
 
-                await self?.record(result, for: url)
+                await self?.record(result, output: output, for: url)
             }
 
             await self?.finishProcessing()
         }
     }
 
-    private func record(_ status: WallpaperItem.Status, for url: URL) {
+    private func record(_ status: WallpaperItem.Status, output: URL? = nil, for url: URL) {
         if let index = items.firstIndex(where: { $0.url == url }) {
             items[index].status = status
+            items[index].output = output
         }
 
         completed += 1
@@ -152,11 +194,17 @@ final class HideNotchViewModel: ObservableObject {
 
     private func finishProcessing() {
         isProcessing = false
+
+        // Preselect the first result so the wallpaper can be applied straight away.
+        if selectedOutput == nil {
+            selection = items.first(where: { $0.output != nil })?.url
+        }
     }
 
     private func resetStatuses() {
         for index in items.indices {
             items[index].status = .pending
+            items[index].output = nil
         }
     }
 
