@@ -4,15 +4,15 @@
 
 <h1 align="center">HideNotch</h1>
 
-A small macOS app that adds a black menu bar to your wallpapers so the notch on MacBook Pro / Air disappears.
-It is a free replacement for TopNotch for when that app stops working after a macOS update: instead of drawing an overlay
-on screen, the black bar is baked into the wallpaper image itself, so it keeps working on any macOS version.
+**HideNotch hides the MacBook notch** by adding a black menu bar to your wallpapers. It is a free, open-source
+**TopNotch alternative** for MacBook Pro and MacBook Air: instead of drawing an overlay on screen, the black bar is baked
+into the wallpaper image itself, so there is nothing for a macOS update to break.
 
 ![Before and after](docs/before-after.png)
 
-It also fixes the **pixel rendering leak** that other notch hiders suffer from: the sliver of wallpaper that shows
-between a window's rounded corners and the top menu bar. HideNotch paints small black corner fillers into the wallpaper
-exactly where macOS draws those rounded corners, so nothing bleeds through.
+It also closes the **wallpaper leak at window corners**: the sliver of wallpaper that can show between a window's rounded
+top corners and the black menu bar. HideNotch paints small black corner fillers into the wallpaper exactly where macOS
+draws those rounded corners, so nothing bleeds through.
 
 ![HideNotch demo](docs/demo.gif)
 
