@@ -44,8 +44,9 @@ brew install --cask agpriyanshu/tap/hidenotch
 ## Menu bar mode
 
 HideNotch also lives in the menu bar. Turn on **Hide Notch** from its menu and it takes your *current* wallpaper,
-generates a copy with the black bar and corner fillers, and sets that as the wallpaper. Turn it off to get your original
-wallpaper back. If you pick a new wallpaper later, choose **Apply to Current Wallpaper Again**.
+generates a copy with the black bar and corner fillers, and sets that as the wallpaper on **every connected display**.
+Each display gets its own copy, sized to its resolution, and external monitors get a black bar as tall as their menu bar.
+Turn it off to get your original wallpapers back. If you pick a new wallpaper later, choose **Apply to Current Wallpaper Again**.
 
 The menu bar mode uses the same bar height and corner radius as the window (see **Options**). It needs a single image as
 the wallpaper; a folder of images or a dynamic wallpaper is not supported there.

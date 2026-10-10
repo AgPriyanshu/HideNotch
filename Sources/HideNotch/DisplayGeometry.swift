@@ -24,19 +24,27 @@ struct DisplayGeometry {
             return DisplayGeometry(screenSize: fallbackSize, barRatio: fallbackBarRatio, name: "Unknown display", hasNotch: false)
         }
 
-        let hasNotch = screen.safeAreaInsets.top > 0
+        return geometry(for: screen)
+    }
 
-        return DisplayGeometry(
+    /// Geometry of one specific display; used when every connected screen gets its own wallpaper.
+    static func geometry(for screen: NSScreen) -> DisplayGeometry {
+        DisplayGeometry(
             screenSize: screen.frame.size,
             barRatio: barRatio(for: screen),
             name: screen.localizedName,
-            hasNotch: hasNotch
+            hasNotch: screen.safeAreaInsets.top > 0
         )
     }
 
     // The menu bar that hides the notch keeps a fixed share of the panel, so it is measured against the display's
     // default resolution instead of the (possibly scaled) mode that is active right now.
     private static func barRatio(for screen: NSScreen) -> Double {
+        // A display without a notch just gets a black bar as tall as its menu bar.
+        if screen.safeAreaInsets.top == 0 {
+            return NSStatusBar.system.thickness / screen.frame.height
+        }
+
         guard
             let number = screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber,
             let modes = CGDisplayCopyAllDisplayModes(

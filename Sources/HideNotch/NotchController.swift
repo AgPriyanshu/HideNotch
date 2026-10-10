@@ -40,13 +40,6 @@ final class NotchController: ObservableObject {
         enable()
     }
 
-    private func targetScreens() -> [NSScreen] {
-        let screens = NSScreen.screens
-        let notched = screens.filter { $0.safeAreaInsets.top > 0 }
-
-        return notched.isEmpty ? screens : notched
-    }
-
     private static func key(for screen: NSScreen) -> String {
         (screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber)?.stringValue ?? "main"
     }
@@ -55,15 +48,13 @@ final class NotchController: ObservableObject {
         isBusy = true
         message = nil
 
-        let geometry = DisplayGeometry.detect()
-        let options = SettingsStore.options(for: geometry)
         let folder = Self.generatedFolder
         var originals = self.originals
 
         // Everything that touches NSScreen is read here, on the main actor.
-        var jobs: [(screen: NSScreen, key: String, source: URL)] = []
+        var jobs: [(screen: NSScreen, key: String, source: URL, options: ProcessingOptions)] = []
 
-        for screen in targetScreens() {
+        for screen in NSScreen.screens {
             let key = Self.key(for: screen)
 
             guard let current = NSWorkspace.shared.desktopImageURL(for: screen) else { continue }
@@ -76,7 +67,9 @@ final class NotchController: ObservableObject {
                 originals[key] = current.absoluteString
             }
 
-            jobs.append((screen, key, source))
+            let options = SettingsStore.options(for: DisplayGeometry.geometry(for: screen))
+
+            jobs.append((screen, key, source, options))
         }
 
         let stored = originals
@@ -97,14 +90,14 @@ final class NotchController: ObservableObject {
                         break
                     }
 
-                    Self.removeGenerated(for: job.source, in: folder)
+                    Self.removeGenerated(for: job.source, key: job.key, in: folder)
 
                     let stamp = String(Int(Date().timeIntervalSince1970))
                     let output = try WallpaperProcessor.process(
                         source: job.source,
                         into: folder,
-                        options: options,
-                        nameSuffix: "-HideNotch-\(stamp)"
+                        options: job.options,
+                        nameSuffix: "-HideNotch-\(job.key)-\(stamp)"
                     )
 
                     results.append((job.screen, output))
@@ -180,9 +173,10 @@ final class NotchController: ObservableObject {
         ])
     }
 
-    // macOS caches a wallpaper by its URL, so every run writes a new file name and drops the previous ones.
-    private nonisolated static func removeGenerated(for source: URL, in folder: URL) {
-        let prefix = source.deletingPathExtension().lastPathComponent + "-HideNotch-"
+    // macOS caches a wallpaper by its URL, so every run writes a new file name and drops the previous ones of the
+    // same screen. Each screen has its own file because their aspect ratios, and so their crops, can differ.
+    private nonisolated static func removeGenerated(for source: URL, key: String, in folder: URL) {
+        let prefix = source.deletingPathExtension().lastPathComponent + "-HideNotch-\(key)-"
         let files = (try? FileManager.default.contentsOfDirectory(atPath: folder.path)) ?? []
 
         for file in files where file.hasPrefix(prefix) {

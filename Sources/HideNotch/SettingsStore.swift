@@ -21,8 +21,11 @@ enum SettingsStore {
     }
 
     static func options(for geometry: DisplayGeometry) -> ProcessingOptions {
-        ProcessingOptions(
-            barRatio: barPercent(default: geometry.barRatio * 100) / 100,
+        // The saved bar height is tuned for the notch; other displays keep their own menu bar height.
+        let barPercent = geometry.hasNotch ? barPercent(default: geometry.barRatio * 100) : geometry.barRatio * 100
+
+        return ProcessingOptions(
+            barRatio: barPercent / 100,
             cornerRadiusPoints: cornerRadius,
             screenSize: geometry.screenSize
         )
