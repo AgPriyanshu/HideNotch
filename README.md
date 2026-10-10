@@ -8,11 +8,23 @@ A small macOS app that adds a black menu bar to your wallpapers so the notch on 
 It is a free replacement for TopNotch for when that app stops working after a macOS update: instead of drawing an overlay
 on screen, the black bar is baked into the wallpaper image itself, so it keeps working on any macOS version.
 
+![Before and after](docs/before-after.png)
+
 It also fixes the **pixel rendering leak** that other notch hiders suffer from: the sliver of wallpaper that shows
 between a window's rounded corners and the top menu bar. HideNotch paints small black corner fillers into the wallpaper
 exactly where macOS draws those rounded corners, so nothing bleeds through.
 
+![HideNotch demo](docs/demo.gif)
+
 ## Install
+
+### Homebrew
+
+```bash
+brew install --cask agpriyanshu/tap/hidenotch
+```
+
+### Manual
 
 1. Download `HideNotch-<version>.dmg` from the [latest release](../../releases/latest).
 2. Open it and drag **HideNotch** to **Applications**.
@@ -26,6 +38,8 @@ exactly where macOS draws those rounded corners, so nothing bleeds through.
 2. Click **Add Black Bar**. New copies are written to `~/Pictures/HideNotch` by default; your originals are untouched.
 3. Select a result in the list and click **Set as Wallpaper**. It is applied to your notched display with **Fill Screen**
    placement. You can also pick the new images yourself in **System Settings → Wallpaper**.
+
+![Gallery](docs/gallery.png)
 
 ## Menu bar mode
 
