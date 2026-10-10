@@ -1,8 +1,16 @@
-# HideNotch
+<p align="center">
+  <img src="docs/icon.png" alt="HideNotch icon" width="128" height="128">
+</p>
+
+<h1 align="center">HideNotch</h1>
 
 A small macOS app that adds a black menu bar to your wallpapers so the notch on MacBook Pro / Air disappears.
 It is a free replacement for TopNotch for when that app stops working after a macOS update: instead of drawing an overlay
 on screen, the black bar is baked into the wallpaper image itself, so it keeps working on any macOS version.
+
+It also fixes the **pixel rendering leak** that other notch hiders suffer from: the sliver of wallpaper that shows
+between a window's rounded corners and the top menu bar. HideNotch paints small black corner fillers into the wallpaper
+exactly where macOS draws those rounded corners, so nothing bleeds through.
 
 ## Install
 
@@ -19,15 +27,25 @@ on screen, the black bar is baked into the wallpaper image itself, so it keeps w
 3. Select a result in the list and click **Set as Wallpaper**. It is applied to your notched display with **Fill Screen**
    placement. You can also pick the new images yourself in **System Settings → Wallpaper**.
 
+## Menu bar mode
+
+HideNotch also lives in the menu bar. Turn on **Hide Notch** from its menu and it takes your *current* wallpaper,
+generates a copy with the black bar and corner fillers, and sets that as the wallpaper. Turn it off to get your original
+wallpaper back. If you pick a new wallpaper later, choose **Apply to Current Wallpaper Again**.
+
+The menu bar mode uses the same bar height and corner radius as the window (see **Options**). It needs a single image as
+the wallpaper; a folder of images or a dynamic wallpaper is not supported there.
+
 ## How it works
 
 - **Bar height** is measured from your display's notch geometry, relative to its default resolution, so it stays correct
   when you switch to a scaled ("More Space") mode.
 - **Crop-aware.** macOS fills the screen and crops the overflow evenly, so the bar is placed below any rows macOS crops
   from taller images.
-- **Rounded window corners.** Small black fillers sit under the bar at the visible left and right edges so wallpaper
-  does not peek out around the rounded top corners of maximized windows. Tune the radius under **Options** if you still
-  see a sliver.
+- **No wallpaper leak at the corners.** Small black fillers sit under the bar at the visible left and right edges, where
+  the rounded top corners of maximized windows would otherwise let wallpaper peek through between the window and the
+  menu bar. They are placed from the crop macOS actually applies, so they line up on every wallpaper size. Tune the
+  radius under **Options** if you still see a sliver.
 
 ## Build from source
 

@@ -6,8 +6,13 @@ import SwiftUI
 final class HideNotchViewModel: ObservableObject {
     @Published var items: [WallpaperItem] = []
     @Published var outputFolder: URL
-    @Published var barPercent: Double
-    @Published var cornerRadius = 14.0
+    @Published var barPercent: Double {
+        didSet { SettingsStore.save(barPercent: barPercent, cornerRadius: cornerRadius) }
+    }
+
+    @Published var cornerRadius: Double {
+        didSet { SettingsStore.save(barPercent: barPercent, cornerRadius: cornerRadius) }
+    }
     @Published var isProcessing = false
     @Published var completed = 0
     @Published var isDropTargeted = false
@@ -26,7 +31,8 @@ final class HideNotchViewModel: ObservableObject {
         let geometry = DisplayGeometry.detect()
         self.geometry = geometry
         self.detectedBarPercent = geometry.barRatio * 100
-        self.barPercent = geometry.barRatio * 100
+        self.barPercent = SettingsStore.barPercent(default: geometry.barRatio * 100)
+        self.cornerRadius = SettingsStore.cornerRadius
 
         let pictures = FileManager.default.urls(for: .picturesDirectory, in: .userDomainMask).first
             ?? FileManager.default.homeDirectoryForCurrentUser
@@ -36,11 +42,11 @@ final class HideNotchViewModel: ObservableObject {
     var finished: Bool { !items.isEmpty && !isProcessing && completed == items.count }
     var failureCount: Int { items.filter { if case .failed = $0.status { return true } else { return false } }.count }
     var barPoints: Double { barPercent / 100 * geometry.screenSize.height }
-    var isCustomized: Bool { abs(barPercent - detectedBarPercent) > 0.001 || cornerRadius != 14 }
+    var isCustomized: Bool { abs(barPercent - detectedBarPercent) > 0.001 || cornerRadius != SettingsStore.defaultCornerRadius }
 
     func resetSettings() {
         barPercent = detectedBarPercent
-        cornerRadius = 14
+        cornerRadius = SettingsStore.defaultCornerRadius
     }
 
     func add(urls: [URL]) {

@@ -21,8 +21,8 @@ enum WallpaperProcessor {
     static let supportedExtensions: Set<String> = ["jpg", "jpeg", "png", "heic", "heif", "tif", "tiff", "bmp", "gif", "webp"]
 
     /// Draws the black bar and corner fillers onto `source` and writes the result into `folder`.
-    static func process(source: URL, into folder: URL, options: ProcessingOptions) throws -> URL {
-        try write(render(source: source, options: options), source: source, into: folder)
+    static func process(source: URL, into folder: URL, options: ProcessingOptions, nameSuffix: String = "") throws -> URL {
+        try write(render(source: source, options: options), source: source, into: folder, nameSuffix: nameSuffix)
     }
 
     /// Returns `source` with the black bar and corner fillers drawn on it.
@@ -163,11 +163,12 @@ enum WallpaperProcessor {
         return image
     }
 
-    private static func write(_ image: CGImage, source: URL, into folder: URL) throws -> URL {
+    private static func write(_ image: CGImage, source: URL, into folder: URL, nameSuffix: String) throws -> URL {
         let ext = source.pathExtension.lowercased()
         let isJPEG = ext == "jpg" || ext == "jpeg"
         let type = isJPEG ? UTType.jpeg : UTType.png
-        let name = isJPEG || ext == "png" ? source.lastPathComponent : source.deletingPathExtension().lastPathComponent + ".png"
+        let outputExtension = isJPEG || ext == "png" ? ext : "png"
+        let name = source.deletingPathExtension().lastPathComponent + nameSuffix + "." + outputExtension
         let destination = folder.appendingPathComponent(name)
 
         guard let target = CGImageDestinationCreateWithURL(destination as CFURL, type.identifier as CFString, 1, nil) else {
