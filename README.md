@@ -48,6 +48,9 @@ generates a copy with the black bar and corner fillers, and sets that as the wal
 Each display gets its own copy, sized to its resolution, and external monitors get a black bar as tall as their menu bar.
 Turn it off to get your original wallpapers back. If you pick a new wallpaper later, choose **Apply to Current Wallpaper Again**.
 
+Enable **Launch at Login** in the same menu to have HideNotch start with your Mac; it then stays quietly in the menu bar
+without opening its window. macOS may ask you to approve it once under **System Settings → General → Login Items**.
+
 The menu bar mode uses the same bar height and corner radius as the window (see **Options**). It needs a single image as
 the wallpaper; a folder of images or a dynamic wallpaper is not supported there.
 

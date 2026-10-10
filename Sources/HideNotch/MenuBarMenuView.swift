@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MenuBarMenuView: View {
     @ObservedObject var controller: NotchController
+    @ObservedObject var loginItem: LoginItemController
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
@@ -20,6 +21,17 @@ struct MenuBarMenuView: View {
         if controller.isEnabled {
             Button("Apply to Current Wallpaper Again") { controller.refresh() }
                 .disabled(controller.isBusy)
+        }
+
+        Divider()
+
+        Toggle(
+            "Launch at Login",
+            isOn: Binding(get: { loginItem.isEnabled }, set: { loginItem.setEnabled($0) })
+        )
+
+        if let message = loginItem.message {
+            Text(message)
         }
 
         Divider()
