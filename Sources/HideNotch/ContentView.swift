@@ -11,7 +11,7 @@ struct ContentView: View {
             if model.items.isEmpty {
                 DropZoneView(isTargeted: model.isDropTargeted, onChoose: model.chooseWallpapers)
             } else {
-                wallpaperList
+                GalleryView(model: model)
             }
 
             outputRow
@@ -23,7 +23,14 @@ struct ContentView: View {
             footer
         }
         .padding(20)
-        .frame(minWidth: 520, minHeight: 560, alignment: .top)
+        .frame(minWidth: 620, minHeight: 640, alignment: .top)
+        .sheet(isPresented: Binding(
+            get: { model.previewURL != nil },
+            set: { if !$0 { model.closePreview() } }
+        )) {
+            PreviewView(model: model)
+        }
+        .onOpenURL { model.add(urls: [$0]) }
         .onDrop(of: [UTType.fileURL], isTargeted: Binding(get: { model.isDropTargeted }, set: { model.isDropTargeted = $0 }), perform: handleDrop)
     }
 
@@ -33,32 +40,6 @@ struct ContentView: View {
                 .font(.title.bold())
             Text("Adds a black menu bar to your wallpapers so the notch disappears.")
                 .foregroundStyle(.secondary)
-        }
-    }
-
-    private var wallpaperList: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                Text("\(model.items.count) wallpaper\(model.items.count == 1 ? "" : "s")")
-                    .font(.headline)
-
-                Spacer()
-
-                Button("Add…", action: model.chooseWallpapers)
-                Button("Clear", action: model.clear)
-            }
-            .disabled(model.isProcessing)
-
-            List(selection: Binding(get: { model.selection }, set: { model.selection = $0 })) {
-                ForEach(model.items) { item in
-                    WallpaperRowView(item: item)
-                        .contextMenu {
-                            Button("Remove") { model.remove(item) }
-                        }
-                }
-            }
-            .listStyle(.bordered)
-            .frame(minHeight: 150)
         }
     }
 
@@ -102,9 +83,11 @@ struct ContentView: View {
             if model.finished {
                 Button("Show in Finder", action: model.revealOutput)
 
-                Button("Set as Wallpaper", action: model.applySelection)
-                    .disabled(model.selectedOutput == nil)
-                    .help(model.selectedOutput == nil ? "Select a processed wallpaper in the list first." : "Apply the selected wallpaper to your display.")
+                Button("Set as Wallpaper") {
+                    if let url = model.selection { model.setAsWallpaper(url) }
+                }
+                .disabled(model.selection == nil || model.isApplying)
+                .help(model.selection == nil ? "Click a wallpaper in the gallery first." : "Apply the selected wallpaper to your display.")
             }
 
             Button("Add Black Bar", action: model.process)

@@ -14,6 +14,10 @@ final class HideNotchViewModel: ObservableObject {
     @Published var selection: URL?
     @Published var appliedName: String?
     @Published var applyError: String?
+    @Published var isApplying = false
+    @Published var previewURL: URL?
+    @Published var previewImage: NSImage?
+    @Published var previewError: String?
 
     let geometry: DisplayGeometry
     private let detectedBarPercent: Double
@@ -98,14 +102,78 @@ final class HideNotchViewModel: ObservableObject {
         outputFolder = url
     }
 
-    var selectedOutput: URL? {
-        items.first(where: { $0.url == selection })?.output
+    private var options: ProcessingOptions {
+        ProcessingOptions(barRatio: barPercent / 100, cornerRadiusPoints: cornerRadius, screenSize: geometry.screenSize)
     }
 
-    /// Applies the selected processed wallpaper to the notched display, or to every display when none has a notch.
-    func applySelection() {
-        guard let output = selectedOutput else { return }
+    func openPreview(_ url: URL) {
+        selection = url
+        previewURL = url
+        previewImage = nil
+        previewError = nil
+        appliedName = nil
+        applyError = nil
 
+        let options = options
+
+        Task.detached(priority: .userInitiated) { [weak self] in
+            do {
+                let cgImage = try WallpaperProcessor.render(source: url, options: options)
+                let image = NSImage(cgImage: cgImage, size: NSSize(width: cgImage.width, height: cgImage.height))
+
+                await self?.finishPreview(image: image, error: nil, for: url)
+            } catch {
+                await self?.finishPreview(image: nil, error: error.localizedDescription, for: url)
+            }
+        }
+    }
+
+    func closePreview() {
+        previewURL = nil
+        previewImage = nil
+        previewError = nil
+    }
+
+    private func finishPreview(image: NSImage?, error: String?, for url: URL) {
+        // Ignore a render that finished after another wallpaper was opened.
+        guard previewURL == url else { return }
+
+        previewImage = image
+        previewError = error
+    }
+
+    /// Writes the processed copy if it doesn't exist yet and applies it to the notched display, or to every
+    /// display when none has a notch.
+    func setAsWallpaper(_ url: URL) {
+        guard !isApplying else { return }
+
+        isApplying = true
+        appliedName = nil
+        applyError = nil
+
+        let options = options
+        let folder = outputFolder
+        let existing = items.first(where: { $0.url == url })?.output
+
+        Task.detached(priority: .userInitiated) { [weak self] in
+            do {
+                let output: URL
+
+                if let existing {
+                    output = existing
+                } else {
+                    try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+                    output = try WallpaperProcessor.process(source: url, into: folder, options: options)
+                }
+
+                await self?.apply(output, source: url)
+            } catch {
+                await self?.failApply(error.localizedDescription)
+            }
+        }
+    }
+
+    private func apply(_ output: URL, source: URL) {
         let screens = NSScreen.screens
         let notched = screens.filter { $0.safeAreaInsets.top > 0 }
         let options: [NSWorkspace.DesktopImageOptionKey: Any] = [
@@ -113,18 +181,27 @@ final class HideNotchViewModel: ObservableObject {
             .allowClipping: true,
         ]
 
-        applyError = nil
-        appliedName = nil
-
         do {
             for screen in notched.isEmpty ? screens : notched {
                 try NSWorkspace.shared.setDesktopImageURL(output, for: screen, options: options)
+            }
+
+            if let index = items.firstIndex(where: { $0.url == source }) {
+                items[index].output = output
+                items[index].status = .done
             }
 
             appliedName = output.lastPathComponent
         } catch {
             applyError = error.localizedDescription
         }
+
+        isApplying = false
+    }
+
+    private func failApply(_ message: String) {
+        applyError = message
+        isApplying = false
     }
 
     func revealOutput() {
@@ -196,7 +273,7 @@ final class HideNotchViewModel: ObservableObject {
         isProcessing = false
 
         // Preselect the first result so the wallpaper can be applied straight away.
-        if selectedOutput == nil {
+        if selection == nil {
             selection = items.first(where: { $0.output != nil })?.url
         }
     }

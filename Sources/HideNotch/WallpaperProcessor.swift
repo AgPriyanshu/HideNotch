@@ -22,6 +22,11 @@ enum WallpaperProcessor {
 
     /// Draws the black bar and corner fillers onto `source` and writes the result into `folder`.
     static func process(source: URL, into folder: URL, options: ProcessingOptions) throws -> URL {
+        try write(render(source: source, options: options), source: source, into: folder)
+    }
+
+    /// Returns `source` with the black bar and corner fillers drawn on it.
+    static func render(source: URL, options: ProcessingOptions) throws -> CGImage {
         let image = try loadImage(source)
         let width = image.width
         let height = image.height
@@ -76,7 +81,20 @@ enum WallpaperProcessor {
             throw WallpaperError.contextFailed
         }
 
-        return try write(result, source: source, into: folder)
+        return result
+    }
+
+    /// Decodes a small, correctly rotated thumbnail without loading the full image.
+    static func thumbnail(for url: URL, maxPixelSize: Int) -> CGImage? {
+        guard let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil) else { return nil }
+
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceThumbnailMaxPixelSize: maxPixelSize,
+        ]
+
+        return CGImageSourceCreateThumbnailAtIndex(imageSource, 0, options as CFDictionary)
     }
 
     // Each filler is a rectangle minus an ellipse that stays tangent to the bar, so the black follows the arc of a

@@ -32,6 +32,16 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>LSMinimumSystemVersion</key><string>13.0</string>
     <key>LSApplicationCategoryType</key><string>public.app-category.graphics-design</string>
     <key>NSHighResolutionCapable</key><true/>
+    <key>CFBundleDocumentTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeName</key><string>Wallpaper</string>
+            <key>CFBundleTypeRole</key><string>Viewer</string>
+            <key>LSHandlerRank</key><string>None</string>
+            <key>LSItemContentTypes</key>
+            <array><string>public.image</string><string>public.folder</string></array>
+        </dict>
+    </array>
 </dict>
 </plist>
 PLIST

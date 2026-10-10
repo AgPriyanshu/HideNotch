@@ -13,7 +13,8 @@ on screen, the black bar is baked into the wallpaper image itself, so it keeps w
 
 ## Use
 
-1. Drop your wallpapers (or a folder of them) onto the window.
+1. Drop your wallpapers (or a folder of them) onto the window or the Dock icon. They show up as a thumbnail gallery.
+   Click any thumbnail to preview it with the black bar applied.
 2. Click **Add Black Bar**. New copies are written to `~/Pictures/HideNotch` by default; your originals are untouched.
 3. Select a result in the list and click **Set as Wallpaper**. It is applied to your notched display with **Fill Screen**
    placement. You can also pick the new images yourself in **System Settings → Wallpaper**.
