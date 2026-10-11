@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HideNotch: hide the MacBook notch (free TopNotch alternative)</title>
+  <meta name="description" content="HideNotch hides the MacBook notch by baking a black menu bar into your wallpapers. A free, open-source TopNotch alternative for MacBook Pro and MacBook Air that macOS updates can't break.">
+  <link rel="canonical" href="https://agpriyanshu.github.io/HideNotch/">
+  <meta name="author" content="Priyanshu Agarwal">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="HideNotch: hide the MacBook notch (free TopNotch alternative)">
+  <meta property="og:description" content="Bake a black menu bar into your wallpapers so the notch disappears. Free, open source, no overlay to break.">
+  <meta property="og:url" content="https://agpriyanshu.github.io/HideNotch/">
+  <meta property="og:image" content="https://agpriyanshu.github.io/HideNotch/daily-dev-cover.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="icon.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "HideNotch",
+    "description": "Hides the MacBook notch by baking a black menu bar into your wallpapers. A free, open-source TopNotch alternative.",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "macOS 13 or later",
+    "url": "https://agpriyanshu.github.io/HideNotch/",
+    "downloadUrl": "https://github.com/AgPriyanshu/HideNotch/releases/latest",
+    "codeRepository": "https://github.com/AgPriyanshu/HideNotch",
+    "license": "https://opensource.org/licenses/MIT",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Person", "name": "Priyanshu Agarwal", "url": "https://github.com/AgPriyanshu" }
+  }
+  </script>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background: #0f0f18; color: #e8e8f0; }
+    main { max-width: 860px; margin: 0 auto; padding: 56px 24px 80px; }
+    header { text-align: center; }
+    header img.icon { width: 112px; height: 112px; }
+    h1 { font-size: 52px; margin: 12px 0 4px; letter-spacing: -0.02em; }
+    h2 { font-size: 26px; margin: 56px 0 12px; }
+    .tagline { font-size: 22px; color: #b9b9cc; margin: 0 0 28px; }
+    .button { display: inline-block; padding: 12px 22px; border-radius: 10px; background: #e8832a; color: #fff; text-decoration: none; font-weight: 600; margin: 4px; }
+    .button.secondary { background: #25253a; }
+    img.shot { width: 100%; height: auto; border-radius: 12px; margin: 16px 0; }
+    code, pre { font-family: ui-monospace, Menlo, monospace; }
+    pre { background: #1a1a2b; padding: 16px; border-radius: 10px; overflow-x: auto; }
+    a { color: #9db4ff; }
+    ul { padding-left: 22px; }
+    footer { margin-top: 64px; color: #8d8da3; font-size: 15px; text-align: center; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <img class="icon" src="icon.png" alt="HideNotch app icon" width="112" height="112">
+    <h1>HideNotch</h1>
+    <p class="tagline">Hide the MacBook notch. A free, open-source TopNotch alternative.</p>
+    <a class="button" href="https://github.com/AgPriyanshu/HideNotch/releases/latest">Download for macOS</a>
+    <a class="button secondary" href="https://github.com/AgPriyanshu/HideNotch">View on GitHub</a>
+  </header>
+
+  <h2>How it works</h2>
+  <p>HideNotch adds a black menu bar to your wallpapers so the notch on MacBook Pro and MacBook Air disappears.
+  Instead of drawing an overlay on screen, the black bar is baked into the wallpaper image itself, so there is nothing
+  for a macOS update to break.</p>
+  <img class="shot" src="before-after.png" alt="Before: the notch with wallpaper showing at the corners. After: a solid black menu bar." width="1554" height="285">
+  <p><small>Illustration of the effect, not a real screenshot.</small></p>
+
+  <h2>Features</h2>
+  <ul>
+    <li><strong>Gallery and preview.</strong> Drop a folder of wallpapers, click any thumbnail to preview it with the bar applied, and set it in one click.</li>
+    <li><strong>Menu bar toggle.</strong> Applies the bar to your current wallpaper on every connected display and restores the originals when you turn it off.</li>
+    <li><strong>Launch at login.</strong> Starts quietly in the menu bar.</li>
+    <li><strong>No wallpaper leak at window corners.</strong> Small black corner fillers close the gap between a window's rounded corners and the menu bar.</li>
+    <li><strong>Crop-aware.</strong> The bar is placed from the crop macOS actually applies to each wallpaper, so it lines up on any image size.</li>
+  </ul>
+  <img class="shot" src="gallery.png" alt="HideNotch gallery of wallpaper thumbnails" width="1200" height="893">
+
+  <h2>Install</h2>
+  <pre><code>brew install --cask agpriyanshu/tap/hidenotch</code></pre>
+  <p>Or download the DMG from the <a href="https://github.com/AgPriyanshu/HideNotch/releases/latest">latest release</a>.
+  The app is ad-hoc signed and not notarized, so on first launch right-click it and choose <strong>Open</strong>.</p>
+
+  <h2>FAQ</h2>
+  <h3>Will it keep working after macOS updates?</h3>
+  <p>HideNotch does not run an overlay. The bar is part of the wallpaper image, so an update has nothing to break.</p>
+  <h3>Which Macs does it work on?</h3>
+  <p>It targets notched MacBook Pro and MacBook Air models running macOS 13 or later. It has been tested on a 14-inch MacBook Pro; reports from other models are welcome on <a href="https://github.com/AgPriyanshu/HideNotch/issues">GitHub</a>.</p>
+  <h3>Is it free?</h3>
+  <p>Yes. HideNotch is open source under the MIT license.</p>
+
+  <footer>
+    Made by <a href="https://github.com/AgPriyanshu">Priyanshu Agarwal</a> &middot;
+    <a href="https://github.com/AgPriyanshu/HideNotch">Source on GitHub</a> &middot; MIT licensed
+  </footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://agpriyanshu.github.io/HideNotch/sitemap.xml
