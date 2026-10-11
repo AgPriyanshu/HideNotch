@@ -8,6 +8,8 @@
 **TopNotch alternative** for MacBook Pro and MacBook Air: instead of drawing an overlay on screen, the black bar is baked
 into the wallpaper image itself, so there is nothing for a macOS update to break.
 
+**Website:** https://agpriyanshu.github.io/HideNotch/
+
 ![Before and after](docs/before-after.png)
 
 It also closes the **wallpaper leak at window corners**: the sliver of wallpaper that can show between a window's rounded
